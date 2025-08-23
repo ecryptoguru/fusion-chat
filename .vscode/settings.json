@@ -1,3 +1,9 @@
 {
-  "tailwindCSS.experimental.configFile": "packages/ui/src/styles/globals.css"
+  "tailwindCSS.experimental.configFile": "packages/ui/src/styles/globals.css",
+  "json.schemas": [
+    {
+      "fileMatch": ["apps/**/package.json"],
+      "url": "https://json.schemastore.org/package.json"
+    }
+  ]
 }
