@@ -23,6 +23,7 @@ export const ad = mutation({
             throw new Error("No organization");
         }
 
+        throw new Error("Tracking test");
         const userId = await ctx.db.insert("users", {
             name: "Ankit",
         });
