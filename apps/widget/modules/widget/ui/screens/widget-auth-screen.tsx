@@ -22,12 +22,11 @@ const formSchema = z.object({
   email: z.string().email("Invalid email address"),
 });
 
-const organizationId = "123";
-
 export const WidgetAuthScreen = () => {
   const setScreen = useSetAtom(screenAtom);
 
   const organizationId = useAtomValue(organizationIdAtom);
+
   const setContactSessionId = useSetAtom(
     contactSessionIdAtomFamily(organizationId || "")
   );
@@ -69,7 +68,7 @@ export const WidgetAuthScreen = () => {
     });
 
     setContactSessionId(contactSessionId);
-    
+    setScreen("selection");
   };
 
   return (
@@ -97,7 +96,7 @@ export const WidgetAuthScreen = () => {
                 <FormControl>
                   <Input
                     className="h-10 bg-background"
-                    placeholder="e.g. John Doe"
+                    placeholder="e.g. Ankit Das"
                     type="text"
                     {...field}
                   />
@@ -114,7 +113,7 @@ export const WidgetAuthScreen = () => {
                 <FormControl>
                   <Input
                     className="h-10 bg-background"
-                    placeholder="e.g. john.doe@example.com"
+                    placeholder="e.g. ankitdas@example.com"
                     type="email"
                     {...field}
                   />
