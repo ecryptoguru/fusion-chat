@@ -22,6 +22,8 @@ const formSchema = z.object({
   email: z.string().email("Invalid email address"),
 });
 
+const organizationId = "123";
+
 export const WidgetAuthScreen = () => {
   const setScreen = useSetAtom(screenAtom);
 
@@ -67,7 +69,7 @@ export const WidgetAuthScreen = () => {
     });
 
     setContactSessionId(contactSessionId);
-    setScreen("selection");
+    
   };
 
   return (
