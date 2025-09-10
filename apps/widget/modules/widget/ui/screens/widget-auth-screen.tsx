@@ -14,15 +14,21 @@ import { WidgetHeader } from "@/modules/widget/ui/components/widget-header";
 import { useMutation } from "convex/react";
 import { api } from "@workspace/backend/_generated/api";
 import { Doc } from "@workspace/backend/_generated/dataModel";
+import { useAtomValue, useSetAtom } from "jotai";
+import { contactSessionIdAtomFamily, organizationIdAtom, screenAtom } from "../../atoms/widget-atoms";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
 });
 
-const organizationId = "123";
-
 export const WidgetAuthScreen = () => {
+  const setScreen = useSetAtom(screenAtom);
+
+  const organizationId = useAtomValue(organizationIdAtom);
+  const setContactSessionId = useSetAtom(
+    contactSessionIdAtomFamily(organizationId || "")
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,8 +46,8 @@ export const WidgetAuthScreen = () => {
     }
 
     const metadata: Doc<"contactSessions">["metadata"] = {
-    userAgent: navigator.userAgent,
-    language: navigator.language,
+      userAgent: navigator.userAgent,
+      language: navigator.language,
       languages: navigator.languages?.join(","),
       platform: navigator.platform,
       vendor: navigator.vendor,
@@ -60,7 +66,8 @@ export const WidgetAuthScreen = () => {
       metadata,
     });
 
-    console.log(contactSessionId);
+    setContactSessionId(contactSessionId);
+    setScreen("selection");
   };
 
   return (
@@ -88,7 +95,7 @@ export const WidgetAuthScreen = () => {
                 <FormControl>
                   <Input
                     className="h-10 bg-background"
-                    placeholder="e.g. Ankit Das"
+                    placeholder="e.g. John Doe"
                     type="text"
                     {...field}
                   />
@@ -105,7 +112,7 @@ export const WidgetAuthScreen = () => {
                 <FormControl>
                   <Input
                     className="h-10 bg-background"
-                    placeholder="e.g. ankitdas@example.com"
+                    placeholder="e.g. john.doe@example.com"
                     type="email"
                     {...field}
                   />
