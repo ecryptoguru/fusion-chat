@@ -7,7 +7,7 @@ import { Button } from "@workspace/ui/components/button";
 
 
 export default function Page() {
-  const addUser = useMutation(api.users.ad);
+  const addUser = useMutation(api.users.add);
 
   return (
     <>
