@@ -32,7 +32,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Button } from "@workspace/ui/components/button";
-
+import { VapiConnectedView } from "../components/vapi-connected-view";
 
 const vapiFeatures: Feature[] = [
   {
@@ -227,7 +227,7 @@ export const VapiView = () => {
 
           <div className="mt-8">
             {vapiPlugin ? (
-              <p>Connected!!</p>
+              <VapiConnectedView onDisconnect={toggleConnection} />
             ) : (
               <PluginCard
                 serviceImage="/vapi.jpg"
