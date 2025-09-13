@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { action, query } from "../_generated/server";
-import { api, components, internal } from "../_generated/api";
+import { components, internal } from "../_generated/api";
 import { supportAgent } from "../system/ai/agents/supportAgent";
 import { paginationOptsValidator } from "convex/server";
 import { escalateConversation } from "../system/ai/tools/escalateConversation";
@@ -15,13 +15,12 @@ export const create = action({
     contactSessionId: v.id("contactSessions"),
   },
   handler: async (ctx, args) => {
-    const validateResult = await ctx.runMutation(
-      api.public.contactSessions.validate,
-      { contactSessionId: args.contactSessionId }
+    const contactSession = await ctx.runQuery(
+      internal.system.contactSessions.getOne,
+      {
+        contactSessionId: args.contactSessionId,
+      }
     );
-    const contactSession = validateResult.valid
-      ? validateResult.contactSession
-      : null;
 
     if (!contactSession || contactSession.expiresAt < Date.now()) {
       throw new ConvexError({
@@ -31,7 +30,7 @@ export const create = action({
     }
 
     const conversation = await ctx.runQuery(
-        internal.system.conversations.getByThreadId,
+      internal.system.conversations.getByThreadId,
       {
         threadId: args.threadId,
       },
@@ -51,7 +50,11 @@ export const create = action({
       });
     }
 
-    // TODO: Implement subscription check
+    // This refreshes the user's session if they are within the threshold
+    await ctx.runMutation(internal.system.contactSessions.refresh, {
+      contactSessionId: args.contactSessionId,
+    });
+
     const shouldTriggerAgent =
       conversation.status === "unresolved";
 

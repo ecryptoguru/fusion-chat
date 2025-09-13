@@ -35,6 +35,7 @@ import { ConversationStatusButton } from "../components/conversation-status-butt
 import { useState } from "react";
 import { cn } from "@workspace/ui/lib/utils";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   message: z.string().min(1, "Message is required"),
@@ -84,6 +85,7 @@ export const ConversationIdView = ({
 
       form.setValue("message", response);
     } catch (error) {
+      toast.error("Something went wrong");
       console.error(error);
     } finally {
       setIsEnhancing(false);
