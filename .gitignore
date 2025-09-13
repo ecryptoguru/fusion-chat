@@ -26,7 +26,7 @@ coverage
 out/
 build
 dist
-docs
+
 
 
 # Debug
@@ -36,5 +36,6 @@ npm-debug.log*
 .DS_Store
 *.pem
 
-/CONTRIBUTING.md
-/SECURITY.md
+# Docs
+CONTRIBUTING.md
+SECURITY.md
