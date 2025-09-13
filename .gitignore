@@ -7,6 +7,8 @@ node_modules
 
 # Local env files
 .env
+.env.*
+!.env.example
 .env.local
 .env.development.local
 .env.test.local
@@ -45,4 +47,5 @@ SECURITY.md
 apps/web/README.md
 apps/embed/README.md
 apps/widget/README.md
+packages/backend/README.md
 packages/ui/README.md
