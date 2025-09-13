@@ -36,5 +36,5 @@ npm-debug.log*
 .DS_Store
 *.pem
 
-CONTRIBUTING.md
-SECURITY.md
+/CONTRIBUTING.md
+/SECURITY.md
