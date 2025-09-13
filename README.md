@@ -1,6 +1,6 @@
-# Fusion Chat Monorepo
+# Fusionchat Monorepo
 
-A modern, type-safe monorepo for building an authenticated multi-tenant chat system with an embeddable widget, powered by Next.js App Router, Convex backend, Clerk authentication, and a shared UI library based on shadcn/ui.
+Fusionchat is a modern, cloud-native customer engagement platform that enables businesses to deliver seamless, AI-powered chat experiences across multiple channels. Built on a serverless architecture with Next.js, Convex backend, Clerk authentication and a shared UI library based on shadcn/ui. Fusionchat combines enterprise-grade security with developer-friendly extensibility.
 
 ## Contents
 
