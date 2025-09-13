@@ -46,40 +46,37 @@ A modern, type-safe monorepo for building an authenticated multi-tenant chat sys
 
 ```mermaid
 flowchart LR
-  subgraph Client Sites
-    E[Embed Script (Vite)] -->|loads| I[Widget App (Next.js)]
+  subgraph "Client Sites"
+    E[Embed Script (Vite)] --> I[Widget App (Next.js)]
   end
 
-  subgraph Monorepo Apps
+  subgraph "Monorepo Apps"
     W[Web App (Next.js)]
     I
   end
 
-  subgraph Shared Packages
-    UI[@workspace/ui (shadcn/ui)]
-    B[@workspace/backend (Convex)]
+  subgraph "Shared Packages"
+    UI["@workspace/ui (shadcn/ui)"]
+    B["@workspace/backend (Convex)"]
   end
 
-  E -- data-organization-id --> I
-  I -- postMessage --> E
+  E <--> I
+  W --> UI
+  I --> UI
+  W --> B
+  I --> B
 
-  W -- uses components --> UI
-  I -- uses components --> UI
-
-  W -- Convex client --> B
-  I -- Convex client/public endpoints --> B
-
-  subgraph External Services
-    Clerk[Clerk]
-    OpenAI[OpenAI]
-    Vapi[VAPI]
-    AWS[AWS Secrets Manager]
+  subgraph "External Services"
+    Clerk["Clerk"]
+    OpenAI["OpenAI"]
+    Vapi["VAPI"]
+    AWS["AWS Secrets Manager"]
   end
 
-  W <-- auth --> Clerk
-  B <-- secret lookup --> AWS
-  B <-- agents/tools --> OpenAI
-  B <-- telephony cfg --> Vapi
+  W <--> Clerk
+  B <--> AWS
+  B <--> OpenAI
+  B <--> Vapi
 ```
 
 ## Backend API Reference and Usage Map
