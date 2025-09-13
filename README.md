@@ -47,11 +47,12 @@ A modern, type-safe monorepo for building an authenticated multi-tenant chat sys
 ```mermaid
 flowchart LR
   subgraph "Client Sites"
-    E[Embed Script (Vite)] --> I[Widget App (Next.js)]
+    E["Embed Script (Vite)"]
+    I["Widget App (Next.js)"]
   end
 
   subgraph "Monorepo Apps"
-    W[Web App (Next.js)]
+    W["Web App (Next.js)"]
     I
   end
 
@@ -60,7 +61,8 @@ flowchart LR
     B["@workspace/backend (Convex)"]
   end
 
-  E <--> I
+  E --> I
+  I --> E
   W --> UI
   I --> UI
   W --> B
