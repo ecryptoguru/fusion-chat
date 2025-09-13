@@ -254,8 +254,8 @@ flowchart LR
     B[@workspace/backend (Convex)]
   end
 
-  E -- data-organization-id --> I
-  I -- postMessage --> E
+  E -->|data-organization-id| I
+  I -->|postMessage| E
 
   W -- uses components --> UI
   I -- uses components --> UI

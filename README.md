@@ -47,7 +47,7 @@ A modern, type-safe monorepo for building an authenticated multi-tenant chat sys
 ```mermaid
 flowchart LR
   subgraph Client Sites
-    E[Embed Script (Vite)] -- loads --> I[Widget App (Next.js)]
+    E[Embed Script (Vite)] -->|loads| I[Widget App (Next.js)]
   end
 
   subgraph Monorepo Apps
