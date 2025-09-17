@@ -42,6 +42,7 @@ npm-debug.log*
 docs/
 CONTRIBUTING.md
 SECURITY.md
+recommendation.md
 
 # Project README files
 apps/web/README.md
