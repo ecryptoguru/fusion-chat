@@ -142,7 +142,7 @@ export const AIInputToolbar = ({
   ...props
 }: AIInputToolbarProps) => (
   <div
-    className={cn("flex items-center justify-between p-1 pr-5", className)}
+    className={cn("flex items-center justify-between p-1 pr-2", className)}
     {...props}
   />
 );
@@ -211,7 +211,7 @@ export const AIInputSubmit = ({
 
   return (
     <Button
-      className={cn("gap-1.5 rounded-md rounded-br-lg -ml-5", className)}
+      className={cn("gap-1.5 rounded-md rounded-br-lg px-6", className)}
       size={size}
       type="submit"
       variant={variant}
