@@ -347,5 +347,5 @@ import { Button } from "@workspace/ui/components/button";
 
 ## License
 
-Proprietary FusionwaveAI. All rights reserved.
+FusionwaveAI. All rights relinquished.
 
