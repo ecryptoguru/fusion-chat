@@ -116,38 +116,47 @@ export const addFile = action({
 
     const storageId = await ctx.storage.store(blob);
 
-    const text = await extractTextContent(ctx, {
-      storageId,
-      filename,
-      bytes,
-      mimeType,
-    });
-
-    const { entryId, created } = await rag.add(ctx, {
-      // SUPER IMPORTANT: What search space to add this to. You cannot search across namespaces,
-      // If not added, it will be considered global (we do not want this)
-      namespace: orgId,
-      text,
-      key: filename,
-      title: filename,
-      metadata: {
-        storageId, // Important for file deletion
-        uploadedBy: orgId, // Important for deletion
+    try {
+      const text = await extractTextContent(ctx, {
+        storageId,
         filename,
-        category: category ?? null,
-      } as EntryMetadata,
-      contentHash: await contentHashFromArrayBuffer(bytes) // To avoid re-inserting if the file content hasn't changed
-    });
+        bytes,
+        mimeType,
+      });
 
-    if (!created) {
-      console.debug("entry already exists, skipping upload metadata");
+      const { entryId, created } = await rag.add(ctx, {
+        // SUPER IMPORTANT: What search space to add this to. You cannot search across namespaces,
+        // If not added, it will be considered global (we do not want this)
+        namespace: orgId,
+        text,
+        key: filename,
+        title: filename,
+        metadata: {
+          storageId, // Important for file deletion
+          uploadedBy: orgId, // Important for deletion
+          filename,
+          category: category ?? null,
+        } as EntryMetadata,
+        contentHash: await contentHashFromArrayBuffer(bytes) // To avoid re-inserting if the file content hasn't changed
+      });
+
+      const entry = await rag.getEntry(ctx, { entryId });
+
+      if (!created) {
+        console.debug("entry already exists, skipping upload metadata");
+        await ctx.storage.delete(storageId);
+      }
+
+      return {
+        url: entry?.metadata?.storageId
+          ? await ctx.storage.getUrl(entry.metadata.storageId)
+          : null,
+        entryId,
+      };
+    } catch (error) {
       await ctx.storage.delete(storageId);
+      throw error;
     }
-
-    return {
-      url: await ctx.storage.getUrl(storageId),
-      entryId,
-    };
   },
 });
 

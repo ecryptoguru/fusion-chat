@@ -4,6 +4,8 @@ import type { StorageActionWriter } from "convex/server";
 import { assert } from "convex-helpers";
 import { Id } from "../_generated/dataModel";
 
+const MAX_LLM_EXTRACTION_BYTES = 5 * 1024 * 1024;
+
 const AI_MODELS = {
   image: openai.chat("gpt-4o-mini"),
   pdf: openai.chat("gpt-4o"),
@@ -40,10 +42,12 @@ export async function extractTextContent(
   assert(url, "Failed to get storage URL");
 
   if (SUPPORTED_IMAGE_TYPES.some((type) => type === mimeType)) {
+    await assertExtractionWithinLimits(ctx, storageId, bytes, filename, mimeType);
     return extractImageText(url);
   }
 
   if (mimeType.toLowerCase().includes("pdf")) {
+    await assertExtractionWithinLimits(ctx, storageId, bytes, filename, mimeType);
     return extractPdfText(url, mimeType, filename);
   }
 
@@ -53,6 +57,27 @@ export async function extractTextContent(
 
   throw new Error(`Unsupported MIME type: ${mimeType}`);
 };
+
+async function assertExtractionWithinLimits(
+  ctx: { storage: StorageActionWriter },
+  storageId: Id<"_storage">,
+  bytes: ArrayBuffer | undefined,
+  filename: string,
+  mimeType: string,
+): Promise<void> {
+  const arrayBuffer =
+    bytes || (await (await ctx.storage.get(storageId))?.arrayBuffer());
+
+  if (!arrayBuffer) {
+    throw new Error(`Failed to get file content for ${filename}`);
+  }
+
+  if (arrayBuffer.byteLength > MAX_LLM_EXTRACTION_BYTES) {
+    throw new Error(
+      `File is too large for AI extraction (${mimeType}). Please upload a smaller file or split it into smaller parts.`,
+    );
+  }
+}
 
 async function extractTextFileContent(
   ctx: { storage: StorageActionWriter },
@@ -70,6 +95,12 @@ async function extractTextFileContent(
   const text = new TextDecoder().decode(arrayBuffer);
 
   if (mimeType.toLowerCase() !== "text/plain") {
+    if (arrayBuffer.byteLength > MAX_LLM_EXTRACTION_BYTES) {
+      throw new Error(
+        `File is too large for AI extraction (${mimeType}). Please upload a smaller file or split it into smaller parts.`,
+      );
+    }
+
     const result = await generateText({
       model: AI_MODELS.html,
       system: SYSTEM_PROMPTS.html,
