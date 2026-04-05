@@ -6,6 +6,7 @@ import { internal } from "../../../_generated/api";
 import { supportAgent } from "../agents/supportAgent";
 import rag from "../rag";
 import { SEARCH_INTERPRETER_PROMPT } from "../constants";
+import { logAiUsage } from "../telemetry";
 
 const SEARCH_FALLBACK_RESPONSE =
   "I couldn't find specific information about that in our knowledge base. Would you like me to connect you with a human support agent?";
@@ -84,6 +85,16 @@ export const search = createTool({
         }
       ],
       model: openai.chat("gpt-5.4-nano"),
+    });
+
+    const usage = await response.usage;
+    logAiUsage({
+      scope: "search-interpreter",
+      threadId: ctx.threadId,
+      organizationId: orgId,
+      model: "gpt-5.4-nano",
+      provider: "openai",
+      usage,
     });
 
     return response.text.trim() || SEARCH_FALLBACK_RESPONSE;

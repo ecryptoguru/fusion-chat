@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { mutation } from "../_generated/server";
 import { SESSION_DURATION_MS } from "../constants";
 import { checkRateLimit } from "../lib/rateLimit";
@@ -8,6 +8,7 @@ export const create = mutation({
     name: v.string(),
     email: v.string(),
     organizationId: v.string(),
+
     metadata: v.optional(
       v.object({
         userAgent: v.optional(v.string()),
@@ -26,6 +27,13 @@ export const create = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    if (args.name.trim().length === 0 || args.name.length > 100) {
+      throw new ConvexError({ code: "BAD_REQUEST", message: "Name must be between 1 and 100 characters" });
+    }
+    if (args.email.length > 254) {
+      throw new ConvexError({ code: "BAD_REQUEST", message: "Email address too long" });
+    }
+
     // Check rate limiting by organization to prevent abuse
     await checkRateLimit(ctx, args.organizationId, "sessions");
 

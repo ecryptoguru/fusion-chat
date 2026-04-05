@@ -24,7 +24,10 @@ export const useVapi = () => {
     }
 
     const vapiInstance = new Vapi(vapiSecrets.publicApiKey);
-    setVapi(vapiInstance);
+    setVapi((prev) => {
+      if (prev) prev.stop();
+      return vapiInstance;
+    });
 
     const handleCallStart = () => {
       setIsConnected(true);

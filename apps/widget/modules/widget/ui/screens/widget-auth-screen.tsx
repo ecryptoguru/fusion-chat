@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import {
   Form,
   FormControl,
@@ -72,6 +73,7 @@ export const WidgetAuthScreen = () => {
       setScreen("selection");
     } catch (error) {
       console.error(error);
+      toast.error("Failed to start session. Please try again.");
     }
   };
 

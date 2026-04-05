@@ -1,7 +1,6 @@
 "use client"
 
 import { OrganizationSwitcher, UserButton } from "@clerk/nextjs"
-import Image from "next/image";
 import {
     CreditCardIcon,
     InboxIcon,
@@ -9,7 +8,6 @@ import {
     LibraryBigIcon,
     Mic,
     PaletteIcon,
-    SettingsIcon,
 } from "lucide-react";
 
 import Link from "next/link";
@@ -29,7 +27,6 @@ import {
     SidebarRail
 } from "@workspace/ui/components/sidebar";
 import { cn } from "@workspace/ui/lib/utils";
-import { Organization } from "@clerk/nextjs/server";
 
 
 const customerSupportItems = [
@@ -117,7 +114,7 @@ export const DashboardSidebar = () => {
                                     asChild
                                     isActive={isActive(item.url)}
                                     className={cn(
-                                        isActive(item.url) && "bg-gradient-to-b from-sidebar-primary to-[#0b63f3]! text-sidebar-primary-foreground! hover:to-[#0b63f3]/90!"
+                                        isActive(item.url) && "bg-linear-to-b from-sidebar-primary to-[#0b63f3]! text-sidebar-primary-foreground! hover:to-[#0b63f3]/90!"
                                     )}
                                     tooltip={item.title}
                                     >
@@ -143,7 +140,7 @@ export const DashboardSidebar = () => {
                                     asChild
                                     isActive={isActive(item.url)}
                                     className={cn(
-                                        isActive(item.url) && "bg-gradient-to-b from-sidebar-primary to-[#0b63f3]! text-sidebar-primary-foreground! hover:to-[#0b63f3]/90!"
+                                        isActive(item.url) && "bg-linear-to-b from-sidebar-primary to-[#0b63f3]! text-sidebar-primary-foreground! hover:to-[#0b63f3]/90!"
                                     )}
                                     tooltip={item.title}
                                     >
@@ -169,7 +166,7 @@ export const DashboardSidebar = () => {
                                     asChild
                                     isActive={isActive(item.url)}
                                     className={cn(
-                                        isActive(item.url) && "bg-gradient-to-b from-sidebar-primary to-[#0b63f3]! text-sidebar-primary-foreground! hover:to-[#0b63f3]/90!"
+                                        isActive(item.url) && "bg-linear-to-b from-sidebar-primary to-[#0b63f3]! text-sidebar-primary-foreground! hover:to-[#0b63f3]/90!"
                                     )}
                                     tooltip={item.title}
                                     >

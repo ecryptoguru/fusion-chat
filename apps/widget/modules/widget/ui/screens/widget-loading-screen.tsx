@@ -141,6 +141,8 @@ export const WidgetLoadingScreen = ({ organizationId }: { organizationId: string
     setWidgetSettings,
     setLoadingMessage,
     setStep,
+    setErrorMessage,
+    setScreen,
   ]);
 
   // Check completion of parallelized steps

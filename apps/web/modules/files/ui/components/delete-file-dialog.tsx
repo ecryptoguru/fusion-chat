@@ -13,6 +13,7 @@ import {
 } from "@workspace/ui/components/dialog";
 import { api } from "@workspace/backend/_generated/api";
 import type { PublicFile } from "@workspace/backend/private/files";
+import { toast } from "sonner";
 
 interface DeleteFileDialogProps {
   open: boolean;
@@ -42,6 +43,7 @@ export const DeleteFileDialog = ({
       onOpenChange(false);
     } catch(error) {
       console.error(error);
+      toast.error("Failed to delete file. Please try again.");
     } finally {
       setIsDeleting(false);
     }

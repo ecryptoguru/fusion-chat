@@ -19,6 +19,7 @@ import {
   DropzoneEmptyState,
 } from "@workspace/ui/components/dropzone";
 import { api } from "@workspace/backend/_generated/api";
+import { toast } from "sonner";
 
 interface UploadDialogProps {
   open: boolean;
@@ -73,6 +74,7 @@ export const UploadDialog = ({
       handleCancel();
     } catch (error) {
       console.error(error);
+      toast.error("Failed to upload file. Please try again.");
     } finally {
       setIsUploading(false);
     }

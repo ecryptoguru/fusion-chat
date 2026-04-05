@@ -29,6 +29,7 @@ import type * as public_widgetSettings from "../public/widgetSettings.js";
 import type * as system_ai_agents_supportAgent from "../system/ai/agents/supportAgent.js";
 import type * as system_ai_constants from "../system/ai/constants.js";
 import type * as system_ai_rag from "../system/ai/rag.js";
+import type * as system_ai_telemetry from "../system/ai/telemetry.js";
 import type * as system_ai_tools_escalateConversation from "../system/ai/tools/escalateConversation.js";
 import type * as system_ai_tools_resolveConversation from "../system/ai/tools/resolveConversation.js";
 import type * as system_ai_tools_search from "../system/ai/tools/search.js";
@@ -46,14 +47,6 @@ import type {
   FunctionReference,
 } from "convex/server";
 
-/**
- * A utility for referencing Convex functions in your app's API.
- *
- * Usage:
- * ```js
- * const myFunctionReference = api.myModule.myFunction;
- * ```
- */
 declare const fullApi: ApiFromModules<{
   constants: typeof constants;
   "lib/extractTextContent": typeof lib_extractTextContent;
@@ -76,6 +69,7 @@ declare const fullApi: ApiFromModules<{
   "system/ai/agents/supportAgent": typeof system_ai_agents_supportAgent;
   "system/ai/constants": typeof system_ai_constants;
   "system/ai/rag": typeof system_ai_rag;
+  "system/ai/telemetry": typeof system_ai_telemetry;
   "system/ai/tools/escalateConversation": typeof system_ai_tools_escalateConversation;
   "system/ai/tools/resolveConversation": typeof system_ai_tools_resolveConversation;
   "system/ai/tools/search": typeof system_ai_tools_search;
@@ -87,14 +81,30 @@ declare const fullApi: ApiFromModules<{
   "system/secrets": typeof system_secrets;
   users: typeof users;
 }>;
-declare const fullApiWithMounts: typeof fullApi;
 
+/**
+ * A utility for referencing Convex functions in your app's public API.
+ *
+ * Usage:
+ * ```js
+ * const myFunctionReference = api.myModule.myFunction;
+ * ```
+ */
 export declare const api: FilterApi<
-  typeof fullApiWithMounts,
+  typeof fullApi,
   FunctionReference<any, "public">
 >;
+
+/**
+ * A utility for referencing Convex functions in your app's internal API.
+ *
+ * Usage:
+ * ```js
+ * const myFunctionReference = internal.myModule.myFunction;
+ * ```
+ */
 export declare const internal: FilterApi<
-  typeof fullApiWithMounts,
+  typeof fullApi,
   FunctionReference<any, "internal">
 >;
 

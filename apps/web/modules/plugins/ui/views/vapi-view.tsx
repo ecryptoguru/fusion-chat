@@ -167,8 +167,10 @@ const VapiPluginRemoveForm = ({
   setOpen: (value: boolean) => void;
 }) => {
   const removePlugin = useMutation(api.private.plugins.remove);
+  const [isRemoving, setIsRemoving] = useState(false);
 
   const onSubmit = async () => {
+    setIsRemoving(true);
     try {
       await removePlugin({
         service: "vapi",
@@ -178,6 +180,8 @@ const VapiPluginRemoveForm = ({
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong");
+    } finally {
+      setIsRemoving(false);
     }
   };
 
@@ -191,8 +195,8 @@ const VapiPluginRemoveForm = ({
           Are you sure you want to disconnect the Vapi plugin?
         </DialogDescription>
         <DialogFooter>
-          <Button onClick={onSubmit} variant="destructive">
-            Disconnect
+          <Button disabled={isRemoving} onClick={onSubmit} variant="destructive">
+            {isRemoving ? "Disconnecting..." : "Disconnect"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -219,7 +223,7 @@ export const VapiView = () => {
       <VapiPluginForm open={connectOpen} setOpen={setConnectOpen} />
       <VapiPluginRemoveForm open={removeOpen} setOpen={setRemoveOpen} />
       <div className="flex min-h-screen flex-col bg-muted p-8">
-        <div className="mx-auto w-full max-w-screen-md">
+        <div className="mx-auto w-full max-w-3xl">
           <div className="space-y-2">
             <h1 className="text-2xl md:text-4xl">Vapi Plugin</h1>
             <p className="text-muted-foreground">Connect Vapi to enable AI voice calls and phone support</p>

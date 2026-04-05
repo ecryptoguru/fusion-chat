@@ -29,15 +29,7 @@ export const getVapiSecrets = action({
       publicApiKey: string;
     }>(secret);
 
-    if (!secretData) {
-      return null;
-    }
-
-    if (!secretData.publicApiKey) {
-      return null;
-    }
-
-    if (!secretData.privateApiKey) {
+    if (!secretData?.publicApiKey || !secretData?.privateApiKey) {
       return null;
     }
 

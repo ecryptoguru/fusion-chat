@@ -3,9 +3,13 @@ import { v } from "convex/values";
 import { action } from "../_generated/server";
 import { ConvexError } from "convex/values";
 
-const clerkClient = createClerkClient({
-  secretKey: process.env.CLERK_SECRET_KEY || "",
-});
+let _clerkClient: ReturnType<typeof createClerkClient> | null = null;
+function getClerkClient() {
+  if (!_clerkClient) {
+    _clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY || "" });
+  }
+  return _clerkClient;
+}
 
 export const validate = action({
   args: {
@@ -13,7 +17,7 @@ export const validate = action({
   },
   handler: async (_, args) => {
     try {
-      const organization = await clerkClient.organizations.getOrganization({
+      const organization = await getClerkClient().organizations.getOrganization({
         organizationId: args.organizationId,
       });
       

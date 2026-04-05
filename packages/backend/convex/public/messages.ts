@@ -7,6 +7,7 @@ import { escalateConversation } from "../system/ai/tools/escalateConversation";
 import { resolveConversation } from "../system/ai/tools/resolveConversation";
 import { saveMessage } from "@convex-dev/agent";
 import { search } from "../system/ai/tools/search";
+import { logAiUsage } from "../system/ai/telemetry";
 
 export const create = action({
   args: {
@@ -75,7 +76,19 @@ export const create = action({
     if (shouldTriggerAgent) {
       await supportAgent.generateText(
         ctx,
-        { threadId: args.threadId },
+        {
+          threadId: args.threadId,
+          usageHandler: async (_ctx, { model, provider, usage }) => {
+            logAiUsage({
+              scope: "support-agent",
+              threadId: args.threadId,
+              organizationId: conversation.organizationId,
+              model,
+              provider,
+              usage,
+            });
+          },
+        },
         {
           prompt: args.prompt,
           maxSteps: 5,

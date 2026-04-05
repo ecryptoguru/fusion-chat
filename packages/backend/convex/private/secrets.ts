@@ -6,7 +6,10 @@ import { requireActiveSubscription } from "../lib/rateLimit";
 export const upsert = mutation({
   args: {
     service: v.union(v.literal("vapi")),
-    value: v.any(),
+    value: v.object({
+      publicApiKey: v.string(),
+      privateApiKey: v.string(),
+    }),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();

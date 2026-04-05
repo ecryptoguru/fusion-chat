@@ -11,6 +11,18 @@ export const resolveConversation = createTool({
       return "Missing thread ID";
     }
 
+    const conversation = await ctx.runQuery(internal.system.conversations.getByThreadId, {
+      threadId: ctx.threadId,
+    });
+
+    if (!conversation) {
+      return "Conversation not found";
+    }
+
+    if (conversation.status === "resolved") {
+      return "Conversation already resolved";
+    }
+
     await ctx.runMutation(internal.system.conversations.resolve, {
       threadId: ctx.threadId,
     });

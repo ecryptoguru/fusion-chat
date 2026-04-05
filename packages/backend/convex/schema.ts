@@ -4,7 +4,7 @@ import { v } from "convex/values";
 export default defineSchema({
   subscriptions: defineTable({
     organizationId: v.string(),
-    status: v.string(),
+    status: v.union(v.literal("active"), v.literal("inactive"), v.literal("canceled")),
   })
     .index("by_organization_id", ["organizationId"]),
   widgetSettings: defineTable({
