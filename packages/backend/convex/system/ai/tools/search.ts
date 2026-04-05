@@ -68,8 +68,11 @@ export const search = createTool({
 
     const contextText = formatSearchContext(searchResult.entries, searchResult.text);
 
+    const safeQuery = args.query.slice(0, 500).replace(/["`]/g, "'");
+
     const response = await generateText({
       temperature: 0,
+      maxTokens: 512,
       messages: [
         {
           role: "system",
@@ -77,7 +80,7 @@ export const search = createTool({
         },
         {
           role: "user",
-          content: `User asked: "${args.query}"\n\nSearch results: ${contextText}`
+          content: `User asked: ${safeQuery}\n\nSearch results: ${contextText}`
         }
       ],
       model: openai.chat("gpt-5.4-nano"),

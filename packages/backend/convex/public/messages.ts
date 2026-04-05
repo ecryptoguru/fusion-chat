@@ -14,6 +14,7 @@ export const create = action({
     threadId: v.string(),
     contactSessionId: v.id("contactSessions"),
   },
+
   handler: async (ctx, args) => {
     const contactSession = await ctx.runQuery(
       internal.system.contactSessions.getOne,
@@ -49,6 +50,13 @@ export const create = action({
       });
     }
 
+    if (args.prompt.length > 2000) {
+      throw new ConvexError({
+        code: "BAD_REQUEST",
+        message: "Message too long. Maximum 2000 characters.",
+      });
+    }
+
     if (conversation.status === "resolved") {
       throw new ConvexError({
         code: "BAD_REQUEST",
@@ -71,6 +79,7 @@ export const create = action({
         {
           prompt: args.prompt,
           maxSteps: 5,
+          maxTokens: 1024,
           tools: {
             escalateConversationTool: escalateConversation,
             resolveConversationTool: resolveConversation,
