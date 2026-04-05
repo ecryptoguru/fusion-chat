@@ -29,6 +29,12 @@ export const create = action({
       });
     }
 
+    // Check rate limiting by contact session via internal mutation
+    await ctx.runMutation(internal.system.rateLimits.checkRateLimitInternal, {
+      key: args.contactSessionId,
+      limitKey: "messages",
+    });
+
     const conversation = await ctx.runQuery(
       internal.system.conversations.getByThreadId,
       {

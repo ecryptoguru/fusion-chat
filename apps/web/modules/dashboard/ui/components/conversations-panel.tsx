@@ -39,7 +39,7 @@ export const ConversationsPanel = () => {
           : statusFilter,
     },
     {
-      initialNumItems: 10,
+      initialNumItems: 10
     },
   );
 

@@ -15,7 +15,7 @@ export default function Page() {
         <p>apps/web</p>
         <UserButton />
         <OrganizationSwitcher hidePersonal/>
-        <Button onClick={() => addUser()}>Add</Button>
+        <Button onClick={() => addUser({ name: "New User" })}>Add</Button>
       </div>
     </>
   )

@@ -1,4 +1,3 @@
-import { get } from 'http';
 import { EMBED_CONFIG } from './config';
 import { chatBubbleIcon, closeIcon } from './icons';
 

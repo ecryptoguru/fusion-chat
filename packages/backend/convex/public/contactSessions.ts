@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
 import { SESSION_DURATION_MS } from "../constants";
+import { checkRateLimit } from "../lib/rateLimit";
 
 export const create = mutation({
   args: {
@@ -25,6 +26,9 @@ export const create = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    // Check rate limiting by organization to prevent abuse
+    await checkRateLimit(ctx, args.organizationId, "sessions");
+
     const now = Date.now();
     const expiresAt = now + SESSION_DURATION_MS;
 

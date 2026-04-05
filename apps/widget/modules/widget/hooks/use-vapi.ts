@@ -19,54 +19,64 @@ export const useVapi = () => {
   const [transcript, setTranscript] = useState<TranscriptMessage[]>([]);
 
   useEffect(() => {
-    if (!vapiSecrets) {
+    if (!vapiSecrets?.publicApiKey) {
       return;
     }
 
     const vapiInstance = new Vapi(vapiSecrets.publicApiKey);
     setVapi(vapiInstance);
 
-    vapiInstance.on("call-start", () => {
+    const handleCallStart = () => {
       setIsConnected(true);
       setIsConnecting(false);
       setTranscript([]);
-    });
+    };
 
-    vapiInstance.on("call-end", () => {
+    const handleCallEnd = () => {
       setIsConnected(false);
       setIsConnecting(false);
       setIsSpeaking(false);
-    });
+    };
 
-    vapiInstance.on("speech-start", () => {
-      setIsSpeaking(true);
-    });
+    const handleSpeechStart = () => setIsSpeaking(true);
+    const handleSpeechEnd = () => setIsSpeaking(false);
 
-    vapiInstance.on("speech-end", () => {
-      setIsSpeaking(false);
-    });
-
-    vapiInstance.on("error", (error) => {
+    const handleError = (error: unknown) => {
       console.log(error, "VAPI_ERROR");
       setIsConnecting(false);
-    });
+    };
 
-    vapiInstance.on("message", (message) => {
+    const handleMessage = (message: { type: string; transcriptType?: string; role?: string; transcript?: string }) => {
       if (message.type === "transcript" && message.transcriptType === "final") {
+        const transcript = message.transcript;
+        if (!transcript) return;
         setTranscript((prev) => [
           ...prev,
           {
             role: message.role === "user" ? "user" : "assistant",
-            text: message.transcript,
+            text: transcript,
           }
         ]);
       }
-    });
+    };
+
+    vapiInstance.on("call-start", handleCallStart);
+    vapiInstance.on("call-end", handleCallEnd);
+    vapiInstance.on("speech-start", handleSpeechStart);
+    vapiInstance.on("speech-end", handleSpeechEnd);
+    vapiInstance.on("error", handleError);
+    vapiInstance.on("message", handleMessage);
 
     return () => {
-      vapiInstance?.stop();
-    }
-  }, []);
+      vapiInstance.off("call-start", handleCallStart);
+      vapiInstance.off("call-end", handleCallEnd);
+      vapiInstance.off("speech-start", handleSpeechStart);
+      vapiInstance.off("speech-end", handleSpeechEnd);
+      vapiInstance.off("error", handleError);
+      vapiInstance.off("message", handleMessage);
+      vapiInstance.stop();
+    };
+  }, [vapiSecrets?.publicApiKey]);
 
   const startCall = () => {
     if (!vapiSecrets || !widgetSettings?.vapiSettings?.assistantId) {

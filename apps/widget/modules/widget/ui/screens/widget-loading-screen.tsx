@@ -8,7 +8,7 @@ import { WidgetHeader } from "@/modules/widget/ui/components/widget-header";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { api } from "@workspace/backend/_generated/api";
 
-type InitStep = "org" | "session" | "settings" | "vapi" | "done";
+type InitStep = "org" | "session" | "parallel" | "done";
 
 export const WidgetLoadingScreen = ({ organizationId }: { organizationId: string | null }) => {
   const [step, setStep] = useState<InitStep>("org")
@@ -24,7 +24,7 @@ export const WidgetLoadingScreen = ({ organizationId }: { organizationId: string
 
   const contactSessionId = useAtomValue(contactSessionIdAtomFamily(organizationId || ""));
 
-  // Step 1: Validate organization
+  // Step 1: Validate organization (prerequisite for everything)
   const validateOrganization = useAction(api.public.organizations.validate);
   useEffect(() => {
     if (step !== "org") {
@@ -54,7 +54,7 @@ export const WidgetLoadingScreen = ({ organizationId }: { organizationId: string
       .catch(() => {
         setErrorMessage("Unable to verify organization");
         setScreen("error");
-      })
+      });
   }, [
     step,
     organizationId,
@@ -77,7 +77,8 @@ export const WidgetLoadingScreen = ({ organizationId }: { organizationId: string
 
     if (!contactSessionId) {
       setSessionValid(false);
-      setStep("settings");
+      // Parallelize steps 3 and 4 after step 1 completes
+      setStep("parallel");
       return;
     }
 
@@ -86,44 +87,34 @@ export const WidgetLoadingScreen = ({ organizationId }: { organizationId: string
     validateContactSession({ contactSessionId })
       .then((result) => {
         setSessionValid(result.valid);
-        setStep("settings");
+        setStep("parallel");
       })
       .catch(() => {
         setSessionValid(false);
-        setStep("settings");
-      })
+        setStep("parallel");
+      });
   }, [step, contactSessionId, validateContactSession, setLoadingMessage]);
 
-  // Step 3: Load Widget Settings
+  // Step 3 & 4: Parallelized - Load Widget Settings and Vapi secrets
   const widgetSettings = useQuery(api.public.widgetSettings.getByOrganizationId, 
     organizationId ? {
       organizationId,
     } : "skip",
   );
+  
+  const getVapiSecrets = useAction(api.public.secrets.getVapiSecrets);
+  
+  const [vapiSecretsLoaded, setVapiSecretsLoaded] = useState(false);
+  
   useEffect(() => {
-    if (step !== "settings") {
+    if (step !== "parallel") {
       return;
     }
 
-    setLoadingMessage("Loading widget settings...");
+    setLoadingMessage("Loading widget settings and voice features...");
 
     if (widgetSettings !== undefined) {
       setWidgetSettings(widgetSettings);
-      setStep("vapi");
-    }
-  }, [
-    step,
-    widgetSettings,
-    setStep,
-    setWidgetSettings,
-    setLoadingMessage,
-  ]);
-
-  // Step 4: Load Vapi secrets (Optional)
-  const getVapiSecrets = useAction(api.public.secrets.getVapiSecrets);
-  useEffect(() => {
-    if (step !== "vapi") {
-      return;
     }
 
     if (!organizationId) {
@@ -132,24 +123,36 @@ export const WidgetLoadingScreen = ({ organizationId }: { organizationId: string
       return;
     }
 
-    setLoadingMessage("Loading voice features...");
     getVapiSecrets({ organizationId })
       .then((secrets) => {
         setVapiSecrets(secrets);
-        setStep("done");
+        setVapiSecretsLoaded(true);
       })
       .catch(() => {
         setVapiSecrets(null);
-        setStep("done")
-      })
+        setVapiSecretsLoaded(true);
+      });
   }, [
     step,
     organizationId,
+    widgetSettings,
     getVapiSecrets,
     setVapiSecrets,
+    setWidgetSettings,
     setLoadingMessage,
     setStep,
   ]);
+
+  // Check completion of parallelized steps
+  useEffect(() => {
+    if (step !== "parallel") {
+      return;
+    }
+
+    if (widgetSettings !== undefined && vapiSecretsLoaded) {
+      setStep("done");
+    }
+  }, [step, widgetSettings, vapiSecretsLoaded, setStep]);
 
   useEffect(() => {
     if (step !== "done") {

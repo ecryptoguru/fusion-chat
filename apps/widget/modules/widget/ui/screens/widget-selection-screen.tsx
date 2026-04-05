@@ -46,8 +46,11 @@ export const WidgetSelectionScreen = () => {
 
       setConversationId(conversationId);
       setScreen("chat");
-    } catch {
-      setScreen("auth");
+    } catch (error) {
+      console.error(error);
+      // Only redirect to auth for auth-related errors
+      setScreen("error");
+      setErrorMessage("Failed to create conversation. Please try again.");
     } finally {
       setIsPending(false);
     }

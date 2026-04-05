@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { mutation } from "../_generated/server";
 import { internal } from "../_generated/api";
+import { requireActiveSubscription } from "../lib/rateLimit";
 
 export const upsert = mutation({
   args: {
@@ -26,7 +27,8 @@ export const upsert = mutation({
       });
     }
 
-    // TODO: Check for subscription
+    // Check for active subscription before storing secrets
+    await requireActiveSubscription(ctx, orgId);
 
     await ctx.scheduler.runAfter(0, internal.system.secrets.upsert, {
       service: args.service,

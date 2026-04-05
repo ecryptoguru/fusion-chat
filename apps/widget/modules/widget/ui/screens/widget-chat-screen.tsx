@@ -109,11 +109,15 @@ export const WidgetChatScreen = () => {
 
     form.reset();
 
-    await createMessage({
-      threadId: conversation.threadId,
-      prompt: values.message,
-      contactSessionId,
-    });
+    try {
+      await createMessage({
+        threadId: conversation.threadId,
+        prompt: values.message,
+        contactSessionId,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

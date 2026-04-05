@@ -1,9 +1,10 @@
+import { ConvexError, v } from "convex/values";
 import { mutation, query } from "../_generated/server";
 import { components, internal } from "../_generated/api";
-import { ConvexError, v } from "convex/values";
 import { supportAgent } from "../system/ai/agents/supportAgent";
 import { MessageDoc, saveMessage } from "@convex-dev/agent";
 import { paginationOptsValidator } from "convex/server";
+import { checkRateLimit } from "../lib/rateLimit";
 
 export const getMany = query({
   args: {
@@ -28,29 +29,29 @@ export const getMany = query({
       .order("desc")
       .paginate(args.paginationOpts);
 
-    const conversationsWithLastMessage = await Promise.all(
-      conversations.page.map(async (conversation) => {
-        let lastMessage: MessageDoc | null = null;
-
-        const messages = await supportAgent.listMessages(ctx, {
-          threadId: conversation.threadId,
+    // Batch fetch last messages for all conversations
+    const lastMessages = await Promise.all(
+      conversations.page.map(conv =>
+        supportAgent.listMessages(ctx, {
+          threadId: conv.threadId,
           paginationOpts: { numItems: 1, cursor: null },
-        });
-
-        if (messages.page.length > 0) {
-          lastMessage = messages.page[0] ?? null;
-        }
-
-        return {
-          _id: conversation._id,
-          _creationTime: conversation._creationTime,
-          status: conversation.status,
-          organizationId: conversation.organizationId,
-          threadId: conversation.threadId,
-          lastMessage,
-        };
-      })
+        })
+      )
     );
+    const messageMap = new Map(
+      lastMessages.map((msg, i) => [conversations.page[i]!._id, msg.page[0] ?? null])
+    );
+
+    const conversationsWithLastMessage = conversations.page.map((conversation) => {
+      return {
+        _id: conversation._id,
+        _creationTime: conversation._creationTime,
+        status: conversation.status,
+        organizationId: conversation.organizationId,
+        threadId: conversation.threadId,
+        lastMessage: messageMap.get(conversation._id) ?? null,
+      };
+    });
 
     return {
       ...conversations,
@@ -112,6 +113,9 @@ export const create = mutation({
         message: "Invalid session",
       });
     }
+
+    // Check rate limiting by contact session
+    await checkRateLimit(ctx, args.contactSessionId, "conversations");
 
     // This refreshes the user's session if they are within the threshold
     await ctx.runMutation(internal.system.contactSessions.refresh, {

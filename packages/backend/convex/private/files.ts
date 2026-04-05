@@ -149,7 +149,7 @@ export const addFile = action({
 
       return {
         url: entry?.metadata?.storageId
-          ? await ctx.storage.getUrl(entry.metadata.storageId)
+          ? await ctx.storage.getUrl(entry.metadata.storageId as Id<"_storage">)
           : null,
         entryId,
       };
@@ -260,7 +260,7 @@ async function convertEntryToPublicFile(
     status = "processing"
   }
 
-  const url = storageId ? await ctx.storage.getUrl(storageId) : null;
+  const url = storageId ? await ctx.storage.getUrl(storageId as Id<"_storage">) : null;
 
   return {
     id: entry.entryId,

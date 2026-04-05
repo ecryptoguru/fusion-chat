@@ -10,6 +10,7 @@
 
 import type * as constants from "../constants.js";
 import type * as lib_extractTextContent from "../lib/extractTextContent.js";
+import type * as lib_rateLimit from "../lib/rateLimit.js";
 import type * as lib_secrets from "../lib/secrets.js";
 import type * as private_contactSessions from "../private/contactSessions.js";
 import type * as private_conversations from "../private/conversations.js";
@@ -34,6 +35,8 @@ import type * as system_ai_tools_search from "../system/ai/tools/search.js";
 import type * as system_contactSessions from "../system/contactSessions.js";
 import type * as system_conversations from "../system/conversations.js";
 import type * as system_plugins from "../system/plugins.js";
+import type * as system_rateLimitCleanup from "../system/rateLimitCleanup.js";
+import type * as system_rateLimits from "../system/rateLimits.js";
 import type * as system_secrets from "../system/secrets.js";
 import type * as users from "../users.js";
 
@@ -54,6 +57,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   constants: typeof constants;
   "lib/extractTextContent": typeof lib_extractTextContent;
+  "lib/rateLimit": typeof lib_rateLimit;
   "lib/secrets": typeof lib_secrets;
   "private/contactSessions": typeof private_contactSessions;
   "private/conversations": typeof private_conversations;
@@ -78,6 +82,8 @@ declare const fullApi: ApiFromModules<{
   "system/contactSessions": typeof system_contactSessions;
   "system/conversations": typeof system_conversations;
   "system/plugins": typeof system_plugins;
+  "system/rateLimitCleanup": typeof system_rateLimitCleanup;
+  "system/rateLimits": typeof system_rateLimits;
   "system/secrets": typeof system_secrets;
   users: typeof users;
 }>;

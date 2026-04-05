@@ -44,7 +44,7 @@ export const updateStatus = mutation({
 
     if (conversation.organizationId !== orgId) {
       throw new ConvexError({
-        code: "UNAUTHORZIED",
+        code: "UNAUTHORIZED",
         message: "Invalid Organization ID",
       });
     }
@@ -89,7 +89,7 @@ export const getOne = query({
 
     if (conversation.organizationId !== orgId) {
       throw new ConvexError({
-        code: "UNAUTHORZIED",
+        code: "UNAUTHORIZED",
         message: "Invalid Organization ID",
       });
     }
@@ -163,32 +163,37 @@ export const getMany = query({
         .paginate(args.paginationOpts)
     }
 
-    const conversationsWithAdditionalData = await Promise.all(
-      conversations.page.map(async (conversation) => {
-        let lastMessage: MessageDoc | null = null;
-
-        const contactSession = await ctx.db.get(conversation.contactSessionId);
-
-        if (!contactSession) {
-          return null;
-        }
-
-        const messages = await supportAgent.listMessages(ctx, {
-          threadId: conversation.threadId,
-          paginationOpts: { numItems: 1, cursor: null },
-        });
-
-        if (messages.page.length > 0) {
-          lastMessage = messages.page[0] ?? null;
-        }
-
-        return {
-          ...conversation,
-          lastMessage,
-          contactSession,
-        };
-      })
+    // Batch fetch all contact sessions and last messages
+    const contactSessionIds = conversations.page.map(c => c.contactSessionId);
+    const contactSessions = await Promise.all(
+      contactSessionIds.map(id => ctx.db.get(id))
     );
+    const sessionMap = new Map(contactSessions.filter(Boolean).map(s => [s!._id, s]));
+
+    // Batch fetch last messages for all conversations
+    const lastMessages = await Promise.all(
+      conversations.page.map(conv =>
+        supportAgent.listMessages(ctx, {
+          threadId: conv.threadId,
+          paginationOpts: { numItems: 1, cursor: null },
+        })
+      )
+    );
+    const messageMap = new Map(
+      lastMessages.map((msg, i) => [conversations.page[i]!._id, msg.page[0] ?? null])
+    );
+
+    const conversationsWithAdditionalData = conversations.page.map((conversation, index) => {
+      const contactSession = sessionMap.get(conversation.contactSessionId);
+      if (!contactSession) {
+        return null;
+      }
+      return {
+        ...conversation,
+        lastMessage: messageMap.get(conversation._id) ?? null,
+        contactSession,
+      };
+    });
 
     const validConversations = conversationsWithAdditionalData.filter(
       (conv): conv is NonNullable<typeof conv> => conv !== null,

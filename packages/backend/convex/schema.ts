@@ -67,4 +67,10 @@ export default defineSchema({
   users: defineTable({
     name: v.string(),
   }),
+  rateLimits: defineTable({
+    key: v.string(),
+    windowStart: v.number(),
+    count: v.number(),
+  })
+    .index("by_key_and_window", ["key", "windowStart"]),
 });
