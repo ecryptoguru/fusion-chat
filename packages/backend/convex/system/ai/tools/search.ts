@@ -80,7 +80,7 @@ export const search = createTool({
           content: `User asked: "${args.query}"\n\nSearch results: ${contextText}`
         }
       ],
-      model: openai.chat("gpt-4o-mini"),
+      model: openai.chat("gpt-5.4-nano"),
     });
 
     return response.text.trim() || SEARCH_FALLBACK_RESPONSE;
