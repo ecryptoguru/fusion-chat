@@ -102,68 +102,58 @@ export const FilesView = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(() => {
-                  if (isLoadingFirstPage) {
-                    return (
-                      <TableRow>
-                        <TableCell className="h-24 text-center" colSpan={4}>
-                          Loading files...
-                        </TableCell>
-                      </TableRow>
-                    );
-                  }
-
-                  if (files.results.length === 0) {
-                    return (
-                      <TableRow>
-                        <TableCell className="h-24 text-center" colSpan={4}>
-                          No files found
-                        </TableCell>
-                      </TableRow>
-                    )
-                  }
-
-                  return files.results.map((file) => (
-                    <TableRow className="hover:bg-muted/50" key={file.id}>
-                      <TableCell className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <FileIcon />
-                          {file.name}
-                        </div>
-                      </TableCell>
-                      <TableCell className="px-6 py-4">
-                        <Badge className="uppercase" variant="outline">
-                          {file.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="px-6 py-4 text-muted-foreground">
-                        {file.size}
-                      </TableCell>
-                      <TableCell className="px-6 py-4">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              className="size-8 p-0"
-                              size="sm"
-                              variant="ghost"
-                            >
-                              <MoreHorizontalIcon />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => handleDeleteClick(file)}
-                            >
-                              <TrashIcon className="size-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                })()}
+                {isLoadingFirstPage ? (
+                  <TableRow>
+                    <TableCell className="h-24 text-center" colSpan={4}>
+                      Loading files...
+                    </TableCell>
+                  </TableRow>
+                ) : files.results.length === 0 ? (
+                  <TableRow>
+                    <TableCell className="h-24 text-center" colSpan={4}>
+                      No files found
+                    </TableCell>
+                  </TableRow>
+                ) : files.results.map((file) => (
+                  <TableRow className="hover:bg-muted/50" key={file.id}>
+                    <TableCell className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <FileIcon />
+                        {file.name}
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-6 py-4">
+                      <Badge className="uppercase" variant="outline">
+                        {file.type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-muted-foreground">
+                      {file.size}
+                    </TableCell>
+                    <TableCell className="px-6 py-4">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            className="size-8 p-0"
+                            size="sm"
+                            variant="ghost"
+                          >
+                            <MoreHorizontalIcon />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => handleDeleteClick(file)}
+                          >
+                            <TrashIcon className="size-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
             {!isLoadingFirstPage && files.results.length > 0 && (

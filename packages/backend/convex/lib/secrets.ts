@@ -7,20 +7,25 @@ import {
   SecretsManagerClient,
 } from "@aws-sdk/client-secrets-manager";
 
-export function createSecretsManagerClient(): SecretsManagerClient {
-  return new SecretsManagerClient({
-    region: process.env.AWS_REGION,
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
-    },
-  })
-};
+let _client: SecretsManagerClient | null = null;
+
+function getSecretsManagerClient(): SecretsManagerClient {
+  if (!_client) {
+    _client = new SecretsManagerClient({
+      region: process.env.AWS_REGION,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
+      },
+    });
+  }
+  return _client;
+}
 
 export async function getSecretValue(
   secretName: string,
 ): Promise<GetSecretValueCommandOutput> {
-  const client = createSecretsManagerClient();
+  const client = getSecretsManagerClient();
   return await client.send(new GetSecretValueCommand({ SecretId: secretName }));
 };
 
@@ -28,7 +33,7 @@ export async function upsertSecret(
   secretName: string,
   secretValue: Record<string, unknown>,
 ): Promise<void> {
-  const client = createSecretsManagerClient();
+  const client = getSecretsManagerClient();
 
   try {
     await client.send(

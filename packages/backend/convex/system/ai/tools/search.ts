@@ -83,16 +83,6 @@ export const search = createTool({
       model: openai.chat("gpt-4o-mini"),
     });
 
-    const responseText = response.text.trim() || SEARCH_FALLBACK_RESPONSE;
-
-    await supportAgent.saveMessage(ctx, {
-      threadId: ctx.threadId,
-      message: {
-        role: "assistant",
-        content: responseText,
-      },
-    });
-
-    return responseText;
+    return response.text.trim() || SEARCH_FALLBACK_RESPONSE;
   },
 });

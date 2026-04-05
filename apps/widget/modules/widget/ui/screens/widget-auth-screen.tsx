@@ -51,7 +51,7 @@ export const WidgetAuthScreen = () => {
         userAgent: navigator.userAgent,
         language: navigator.language,
         languages: navigator.languages?.join(","),
-        platform: navigator.platform,
+        platform: (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform ?? navigator.userAgent,
         vendor: navigator.vendor,
         screenResolution: `${screen.width}x${screen.height}`,
         viewportSize: `${window.innerWidth}x${window.innerHeight}`,

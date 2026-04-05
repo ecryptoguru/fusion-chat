@@ -70,6 +70,7 @@ export const create = action({
         { threadId: args.threadId },
         {
           prompt: args.prompt,
+          maxSteps: 5,
           tools: {
             escalateConversationTool: escalateConversation,
             resolveConversationTool: resolveConversation,

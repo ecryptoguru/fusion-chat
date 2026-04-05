@@ -148,6 +148,8 @@ export const ConversationIdView = ({
         <Button
           size="sm"
           variant="ghost"
+          disabled
+          aria-label="More options"
         >
           <MoreHorizontalIcon />
         </Button>
