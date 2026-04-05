@@ -150,7 +150,7 @@ export const ContactPanel = () => {
       },
       {
         id: "section-details",
-        title: "Section details",
+        title: "Session details",
         icon: ClockIcon,
         items: [
           {
